@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
+using Application.Users.Queries_Users.LoginUsers.Helpers;
 
 namespace Application
 {
@@ -14,6 +15,8 @@ namespace Application
         {
             var assembly = typeof(DependencyInjection).Assembly;
             services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(assembly));
+
+            services.AddScoped<TokenHelper>();
 
             //services.AddValidatorsFromAssembly(assembly);
 

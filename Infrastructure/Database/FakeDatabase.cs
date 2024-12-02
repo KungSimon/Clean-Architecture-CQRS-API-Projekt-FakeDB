@@ -103,6 +103,19 @@ namespace Infrastructure.Database
 
             return authorToUpdate;
         }
+
+        public List<User> Users
+        {
+            get { return allUsers; }
+            set {  allUsers = value; }
+        }
+
+        private static List<User> allUsers = new()
+        {
+            new User {Id = Guid.NewGuid(), UserName = "Simon"},
+            new User {Id = Guid.NewGuid(), UserName = "Näslund"},
+            new User {Id = Guid.NewGuid(), UserName = "We"}
+        };
     }
 
 }
