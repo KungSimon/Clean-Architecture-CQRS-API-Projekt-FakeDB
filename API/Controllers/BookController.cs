@@ -7,6 +7,7 @@ using Application.Books.Queries_Books.GetBook;
 using Domain;
 using Infrastructure.Database;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -51,6 +52,7 @@ namespace API.Controllers
             return Ok(await _mediator.Send(new GetBookByIdQuery(bookId)));
         }
 
+        [Authorize]
         [HttpGet]
         [Route("getAllBooks")]
         public async Task<IActionResult> GetAllBooks()
