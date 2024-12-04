@@ -85,7 +85,7 @@ namespace API
 
             builder.Services.AddApplication();
 
-            builder.Services.AddInfrastructure();
+            builder.Services.AddInfrastructure(builder.Configuration.GetSection("ConnectionString").Value!);
 
             var app = builder.Build();
 
