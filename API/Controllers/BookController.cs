@@ -47,7 +47,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getBookById/{bookId}")]
-        public async Task<IActionResult> GetBookById(int bookId)
+        public async Task<IActionResult> GetBookById(Guid bookId)
         {
             return Ok(await _mediator.Send(new GetBookByIdQuery(bookId)));
         }
@@ -65,14 +65,14 @@ namespace API.Controllers
 
         [HttpPatch]
         [Route("updateBook/{bookId}")]
-        public async Task<IActionResult> UpdateBook(int bookId, [FromBody] Book book)
+        public async Task<IActionResult> UpdateBook(Guid bookId, [FromBody] Book book)
         {
             return Ok(await _mediator.Send(new UpdateBookByIdCommand(book, bookId)));
         }
 
         [HttpDelete]
         [Route("deleteBook/{bookId}")]
-        public async Task<IActionResult> DeleteBook(int bookId)
+        public async Task<IActionResult> DeleteBook(Guid bookId)
         {
             return Ok(await _mediator.Send(new DeleteBookCommand(bookId)));
         }

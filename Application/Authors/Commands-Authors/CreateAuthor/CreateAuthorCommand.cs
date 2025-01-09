@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Authors.Commands_Authors.CreateAuthor
 {
-    public class CreateAuthorCommand : IRequest<List<Author>>
+    public class CreateAuthorCommand : IRequest<OperationResult<Author>>
     {
         public CreateAuthorCommand(Author authorToAdd)
         {

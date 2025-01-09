@@ -18,6 +18,8 @@ namespace API
 
             // Add services to the container.
 
+            builder.Services.AddLogging();
+
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 
             byte[] secretKey = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]!);
@@ -85,7 +87,7 @@ namespace API
 
             builder.Services.AddApplication();
 
-            builder.Services.AddInfrastructure(builder.Configuration.GetSection("ConnectionString").Value!);
+            builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection"));
 
             var app = builder.Build();
 

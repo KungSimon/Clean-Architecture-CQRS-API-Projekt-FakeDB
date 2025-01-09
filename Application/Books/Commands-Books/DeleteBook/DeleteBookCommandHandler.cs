@@ -1,7 +1,8 @@
 ﻿using Application.Books.Commands.CreateBook;
+using Application.Interfaces.RepositoryInterfaces;
 using Domain;
-using Infrastructure.Database;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,21 +11,44 @@ using System.Threading.Tasks;
 
 namespace Application.Books.Commands_Books.DeleteBook
 {
-    public class DeleteBookCommandHandler : IRequestHandler<DeleteBookCommand, Book>
+    public class DeleteBookCommandHandler : IRequestHandler<DeleteBookCommand, OperationResult<Book>>
     {
-        private readonly FakeDatabase _fakeDatabase;
-        public DeleteBookCommandHandler(FakeDatabase fakeDatabase)
+        private readonly IBookRepository _bookRepository;
+        private readonly ILogger<DeleteBookCommandHandler> _logger;
+        public DeleteBookCommandHandler(IBookRepository bookRepository, ILogger<DeleteBookCommandHandler> logger)
         {
-            _fakeDatabase = fakeDatabase;
+            _bookRepository = bookRepository;
+            _logger = logger;
         }
 
-        public Task<Book> Handle(DeleteBookCommand request, CancellationToken cancellationToken)
+        public async Task<OperationResult<Book>> Handle(DeleteBookCommand request, CancellationToken cancellationToken)
         {
-            Book bookToDelete = _fakeDatabase.Books.FirstOrDefault(book => book.Id == request.BookId)!;
+            _logger.LogInformation("Handling RemoveBookCommand for Book Id: {BookId}", request.BookId);
 
-            _fakeDatabase.Books.Remove(bookToDelete);
+            try
+            {
+                if (request.BookId == Guid.Empty)
+                {
+                    _logger.LogWarning("RemoveBookCommand received with empty Id.");
+                    return OperationResult<Book?>.Failure("Id cannot be empty.");
+                }
 
-            return Task.FromResult(bookToDelete);
+                var book = await _bookRepository.GetBookById(request.BookId);
+                if (book == null)
+                {
+                    _logger.LogWarning("RemoveBookCommand received for non-existent Book with Id: {BookId}", request.BookId);
+                    return OperationResult<Book?>.Failure("Book not found.");
+                }
+
+                await _bookRepository.DeleteBook(request.BookId);
+                _logger.LogInformation("Book with Id: {BookId} removed successfully.", request.BookId);
+                return OperationResult<Book?>.Successfull(book);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while removing the book with Id: {BookId}", request.BookId);
+                return OperationResult<Book?>.Failure($"An error occurred while removing the book: {ex.Message}");
+            }
         }
     }
 }

@@ -8,13 +8,13 @@ namespace Domain
 {
     public class Author
     {
-        public int Id { get; set; }
+        public Guid Id { get; private set; }
         public string Name { get; set; }
         public string Bio { get; set; }
 
-        public Author(int id, string name, string bio)
+        public Author(Guid id, string name, string bio)
         {
-            Id = id;
+            Id = Guid.NewGuid();
             Name = name;
             Bio = bio;
         }

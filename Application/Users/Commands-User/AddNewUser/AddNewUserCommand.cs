@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Application.Users.Commands_User.AddNewUser
 {
-    public class AddNewUserCommand : IRequest<User>
+    public class AddNewUserCommand : IRequest <OperationResult<User>>
     {
-        public AddNewUserCommand(UserDto newUser)
+        public AddNewUserCommand(User newUser)
         {
             NewUser = newUser;
         }
 
-        public UserDto NewUser { get; }
+        public User NewUser { get; }
     }
 }

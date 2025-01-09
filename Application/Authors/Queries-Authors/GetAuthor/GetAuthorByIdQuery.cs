@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Application.Authors.Queries_Authors.GetAuthor
 {
-    public class GetAuthorByIdQuery : IRequest<Author>
+    public class GetAuthorByIdQuery : IRequest<OperationResult<Author>>
     {
-        public GetAuthorByIdQuery(int id)
+        public GetAuthorByIdQuery(Guid id)
         {
             Id = id;
         }
 
-        public int Id { get; }
+        public Guid Id { get; }
     }
 }

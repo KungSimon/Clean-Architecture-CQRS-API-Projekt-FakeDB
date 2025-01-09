@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using Application.Dtos;
+using Domain;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -8,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Application.Books.Queries_Books.GetBook
 {
-    public class GetBookByIdQuery : IRequest<Book>
+    public class GetBookByIdQuery : IRequest<OperationResult<Book>> 
     {
-        public GetBookByIdQuery(int id)
+        public GetBookByIdQuery(Guid id)
         {
-            Id = id;
+           Id = id;
         }
 
-        public int Id { get; }
+        public Guid Id { get; }
     }
 }

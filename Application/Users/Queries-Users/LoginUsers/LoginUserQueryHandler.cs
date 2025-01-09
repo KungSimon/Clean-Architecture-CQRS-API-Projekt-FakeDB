@@ -1,6 +1,8 @@
-﻿using Application.Users.Queries_Users.LoginUsers.Helpers;
-using Infrastructure.Database;
+﻿using Application.Interfaces.RepositoryInterfaces;
+using Application.Users.Queries_Users.LoginUsers.Helpers;
+using Domain;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,28 +11,42 @@ using System.Threading.Tasks;
 
 namespace Application.Users.Queries_Users.LoginUsers
 {
-    public class LoginUserQueryHandler : IRequestHandler<LoginUserQuery, string>
+    public class LoginUserQueryHandler : IRequestHandler<LoginUserQuery, OperationResult<string>>
     {
-        private readonly FakeDatabase _fakeDatabase;
+        private readonly ILogger<LoginUserQueryHandler> _logger;
+        private readonly IUserRepository _userRepository;
         private readonly TokenHelper _tokenHelper;
 
-        public LoginUserQueryHandler(FakeDatabase fakeDatabase, TokenHelper tokenHelper)
+        public LoginUserQueryHandler( TokenHelper tokenHelper, ILogger<LoginUserQueryHandler> logger, IUserRepository userRepository)
         {
-            _fakeDatabase = fakeDatabase;
             _tokenHelper = tokenHelper;
+            _logger = logger;
+            _userRepository = userRepository;
         }
-        public Task<string> Handle(LoginUserQuery request, CancellationToken cancellationToken)
+
+        public async Task<OperationResult<string>> Handle(LoginUserQuery request, CancellationToken cancellationToken)
         {
-            var user = _fakeDatabase.Users.FirstOrDefault(user => user.UserName == request.LoginUser.UserName && user.Password == request.LoginUser.Password);
+            _logger.LogInformation("Trying to log in", request.LoginUser.UserName);
 
-            if (user == null)
+            try
             {
-                throw new UnauthorizedAccessException("Invalid username or password");
+                var user = await _userRepository.LogInUser(request.LoginUser.UserName, request.LoginUser.Password);
+
+                if (user == null)
+                {
+                    _logger.LogWarning("Invalid username or password", request.LoginUser.UserName);
+                    return OperationResult<string>.Failure("Invalid username or password");
+                }
+
+                string token = _tokenHelper.GenerateJwtToken(user);
+                _logger.LogInformation("User logged in successfully.", request.LoginUser.UserName);
+                return OperationResult<string>.Successfull(token);
             }
-
-            string token = _tokenHelper.GenerateJwtToken(user);
-
-            return Task.FromResult(token);
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.LogError(e, "An error occurred while logging in User", request.LoginUser.UserName);
+                return OperationResult<string>.Failure($"An error occurred while logging in: {e.Message}");
+            }
         }
     }
 }

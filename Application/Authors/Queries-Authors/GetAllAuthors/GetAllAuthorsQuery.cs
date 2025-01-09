@@ -8,13 +8,5 @@ using System.Threading.Tasks;
 
 namespace Application.Authors.Queries_Authors.GetAllAuthors
 {
-    public class GetAllAuthorsQuery : IRequest<List<Author>>
-    {
-        //public GetAllAuthorsQuery(List<Author> authors)
-        //{
-            //Authors = authors;
-        //}
-
-        //public List<Author> Authors { get; }
-    }
+    public record GetAllAuthorsQuery : IRequest<OperationResult<List<Author>>>;
 }
