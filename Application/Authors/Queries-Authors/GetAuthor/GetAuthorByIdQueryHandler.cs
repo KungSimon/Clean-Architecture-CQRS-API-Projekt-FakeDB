@@ -1,6 +1,7 @@
-﻿using Domain;
-using Infrastructure.Database;
+﻿using Application.Interfaces.RepositoryInterfaces;
+using Domain;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,22 +10,34 @@ using System.Threading.Tasks;
 
 namespace Application.Authors.Queries_Authors.GetAuthor
 {
-    public class GetAuthorByIdQueryHandler : IRequestHandler<GetAuthorByIdQuery, Author>
+    public class GetAuthorByIdQueryHandler : IRequestHandler<GetAuthorByIdQuery, OperationResult<Author>>
     {
-        private readonly FakeDatabase _fakeDatabase;
+        private readonly IAuthorRepository _authorRepository;
+        private readonly ILogger<GetAuthorByIdQueryHandler> _logger;
 
-        public GetAuthorByIdQueryHandler(FakeDatabase fakeDatabase)
+        public GetAuthorByIdQueryHandler(IAuthorRepository authorRepository, ILogger<GetAuthorByIdQueryHandler> logger)
         {
-            _fakeDatabase = fakeDatabase;
+            _authorRepository = authorRepository;
+            _logger = logger;
         }
-        public Task<Author> Handle(GetAuthorByIdQuery request, CancellationToken cancellationToken)
+        public async Task<OperationResult<Author>> Handle(GetAuthorByIdQuery request, CancellationToken cancellationToken)
         {
-            Author authorToGet = _fakeDatabase.Authors.FirstOrDefault(Author => Author.Id == request.Id)!;
-
-            Author wantedAuthor = _fakeDatabase.Authors.Where(Author => Author.Id == request.Id).FirstOrDefault()!;
-
-            return Task.FromResult(authorToGet);
-            return Task.FromResult(wantedAuthor);
+            try
+            {
+                var authorToGet = await _authorRepository.GetAuthorById(request.Id);
+                if (authorToGet == null)
+                {
+                    _logger.LogError("Author not found");
+                    return OperationResult<Author>.Failure("Author not found");
+                }
+                _logger.LogInformation("Author found");
+                return OperationResult<Author>.Successfull(authorToGet);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while getting the author");
+                return OperationResult<Author>.Failure("An error occurred while getting the author");
+            }
         }
     }
 }

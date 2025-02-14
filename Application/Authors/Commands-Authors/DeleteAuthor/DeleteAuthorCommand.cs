@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Application.Authors.Commands_Authors.DeleteAuthor
 {
-    public class DeleteAuthorCommand : IRequest<Author>
+    public class DeleteAuthorCommand : IRequest<OperationResult<Author>>
     {
-        public DeleteAuthorCommand(int authorId)
+        public DeleteAuthorCommand(Guid authorId)
         {
             AuthorId = authorId;
         }
 
-        public int AuthorId { get; }
+        public Guid AuthorId { get; }
     }
 }

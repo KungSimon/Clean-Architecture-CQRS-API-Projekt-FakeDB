@@ -1,4 +1,7 @@
-﻿using Infrastructure.Database;
+﻿using Application.Interfaces.RepositoryInterfaces;
+using Domain;
+using Infrastructure.Database;
+using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -20,7 +23,23 @@ namespace Infrastructure
             {
                 options.UseSqlServer(connectionString);
             });
+
+            services.AddScoped<IAuthorRepository, AuthorRepository>();
+            services.AddScoped<IBookRepository, BookRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             return services;
-        }
+
+
+            services.AddDbContext<RealDatabase>(options =>
+            {
+                options.UseSqlServer(connectionString);
+            });
+
+            //services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+            services.AddIdentityCore<User>(); }
+        //.AddRoles<IdentityRole>();}
+        //.AddEntityFrameworkStores<RealDatabase>();
+    
     }
 }

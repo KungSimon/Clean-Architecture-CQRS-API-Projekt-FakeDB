@@ -1,7 +1,8 @@
 ﻿using Application.Books.Commands.CreateBook;
+using Application.Interfaces.RepositoryInterfaces;
 using Domain;
-using Infrastructure.Database;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,21 +11,31 @@ using System.Threading.Tasks;
 
 namespace Application.Authors.Commands_Authors.CreateAuthor
 {
-    public class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorCommand, List<Author>>
+    public class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorCommand, OperationResult<Author>>
     {
         //private readonly List<Author> _authors;
         //FakeDB should be used here
-        private readonly FakeDatabase _fakeDatabase;
-
-        public CreateAuthorCommandHandler(FakeDatabase fakeDatabase)
+        private readonly IAuthorRepository _authorRepository;
+        private readonly ILogger<CreateAuthorCommandHandler> _logger;
+        public CreateAuthorCommandHandler(IAuthorRepository authorRepository, ILogger<CreateAuthorCommandHandler> logger)
         {
-            _fakeDatabase = fakeDatabase;
+            _authorRepository = authorRepository;
+            _logger = logger;
         }
 
-        Task<List<Author>> IRequestHandler<CreateAuthorCommand, List<Author>>.Handle(CreateAuthorCommand request, CancellationToken cancellationToken)
-        {
-            _fakeDatabase.AddNewAuthor(request.NewAuthor);
-            return Task.FromResult(_fakeDatabase.Authors);
-        }
+         async Task<OperationResult<Author>> IRequestHandler<CreateAuthorCommand, OperationResult<Author>>.Handle(CreateAuthorCommand request, CancellationToken cancellationToken)
+         {
+            try
+            {
+                _authorRepository.AddAuthor(request.NewAuthor);
+                _logger.LogInformation("Author created");
+                return await Task.FromResult(OperationResult<Author>.Successfull(request.NewAuthor));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Author not created");
+                return OperationResult<Author>.Failure("Author not created");
+            }
+         }
     }
 }

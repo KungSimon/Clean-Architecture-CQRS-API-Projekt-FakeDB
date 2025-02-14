@@ -53,7 +53,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getAuthorById/{authorId}")]
-        public async Task<IActionResult> GetAuthorById(int authorId)
+        public async Task<IActionResult> GetAuthorById(Guid authorId)
         {
             return Ok(await _mediator.Send(new GetAuthorByIdQuery(authorId)));
         }
@@ -69,14 +69,14 @@ namespace API.Controllers
 
         [HttpPatch]
         [Route("updateAuthor/{authorId}")]
-        public async Task<IActionResult> UpdateAuthor(int authorId, [FromBody] Author author)
+        public async Task<IActionResult> UpdateAuthor(Guid authorId, [FromBody] Author author)
         {
             return Ok(await _mediator.Send(new UpdateAuthorByIdCommand(authorId, author)));
         }
 
         [HttpDelete]
         [Route("deleteAuthor/{authorId}")]
-        public async Task<IActionResult> DeleteAuthor(int authorId)
+        public async Task<IActionResult> DeleteAuthor(Guid authorId)
         {
             return Ok(await _mediator.Send(new DeleteAuthorCommand(authorId)));
         }

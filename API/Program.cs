@@ -18,6 +18,8 @@ namespace API
 
             // Add services to the container.
 
+            builder.Services.AddLogging();
+
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 
             byte[] secretKey = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]!);
@@ -79,13 +81,13 @@ namespace API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            //Hej 
 
             //builder.Services.AddSingleton<FakeDatabase>();
 
             builder.Services.AddApplication();
 
-            builder.Services.AddInfrastructure(builder.Configuration.GetSection("ConnectionString").Value!);
+            builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection"));
 
             var app = builder.Build();
 

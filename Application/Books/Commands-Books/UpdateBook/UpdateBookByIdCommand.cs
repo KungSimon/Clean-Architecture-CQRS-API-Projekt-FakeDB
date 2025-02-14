@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace Application.Books.Commands.UpdateBook
 {
-    public class UpdateBookByIdCommand : IRequest<Book>
+    public class UpdateBookByIdCommand : IRequest<OperationResult<Book>>
     {
-        public UpdateBookByIdCommand(Book updatedBook, int id)
+        public UpdateBookByIdCommand(Book updatedBook, Guid id)
         {
             UpdatedBook = updatedBook;
             Id = id;
         }
 
         public Book UpdatedBook { get; }
-        public int Id { get; }
+        public Guid Id { get; }
     }
 }

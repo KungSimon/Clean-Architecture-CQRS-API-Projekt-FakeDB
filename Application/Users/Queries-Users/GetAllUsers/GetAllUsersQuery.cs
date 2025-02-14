@@ -8,7 +8,5 @@ using System.Threading.Tasks;
 
 namespace Application.Users.Queries_Users.GetAllUsers
 {
-    public class GetAllUsersQuery : IRequest<List<User>>
-    {
-    }
+    public record GetAllUsersQuery : IRequest<OperationResult<List<User>>>;
 }

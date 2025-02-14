@@ -1,6 +1,7 @@
-﻿using Domain;
-using Infrastructure.Database;
+﻿using Application.Interfaces.RepositoryInterfaces;
+using Domain;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,21 +10,35 @@ using System.Threading.Tasks;
 
 namespace Application.Authors.Queries_Authors.GetAllAuthors
 {
-    public class GetAllAuthorsQueryHandler : IRequestHandler<GetAllAuthorsQuery, List<Author>>
+    public class GetAllAuthorsQueryHandler : IRequestHandler<GetAllAuthorsQuery, OperationResult<List<Author>>>
     {
         //FakeDB should be used here
-        private readonly FakeDatabase _fakeDatabase;
-
-        public GetAllAuthorsQueryHandler(FakeDatabase fakeDatabase)
+        private readonly IAuthorRepository _authorRepository;
+        private readonly ILogger<GetAllAuthorsQueryHandler> _logger;
+        public GetAllAuthorsQueryHandler(IAuthorRepository authorRepository, ILogger<GetAllAuthorsQueryHandler> logger)
         {
-            _fakeDatabase = fakeDatabase;
+            _authorRepository = authorRepository;
+            _logger = logger;
         }
-        public Task<List<Author>> Handle(GetAllAuthorsQuery request, CancellationToken cancellationToken)
-        {
-            //_fakeDatabase.Authors.ForEach(request.Authors);
-            var _authors = _fakeDatabase.GetAllAuthors();
-            return Task.FromResult(_authors);
 
+        public async Task<OperationResult<List<Author>>> Handle(GetAllAuthorsQuery request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var authors = await _authorRepository.GetAllAuthors();
+                if (authors == null || !authors.Any())
+                {
+                    _logger.LogError("Authors not found");
+                    return OperationResult<List<Author>>.Failure("No authors found");
+                }
+                _logger.LogInformation("Authors found");
+                return OperationResult<List<Author>>.Successfull(authors);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Authors not found");
+                return OperationResult<List<Author>>.Failure("Authors not found");
+            }
         }
     }
 }

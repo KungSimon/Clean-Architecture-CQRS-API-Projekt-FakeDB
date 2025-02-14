@@ -1,6 +1,8 @@
-﻿using Domain;
-using Infrastructure.Database;
+﻿using Application.Dtos;
+using Application.Interfaces.RepositoryInterfaces;
+using Domain;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,27 +11,49 @@ using System.Threading.Tasks;
 
 namespace Application.Books.Queries_Books.GetBook
 {
-    public class GetBookByIdQueryHandler : IRequestHandler<GetBookByIdQuery ,Book>
+    public class GetBookByIdQueryHandler : IRequestHandler<GetBookByIdQuery ,OperationResult<Book>>
     {
-        private readonly FakeDatabase _fakeDatabase;
+        private readonly IBookRepository _bookRepository;
+        private readonly ILogger<GetBookByIdQueryHandler> _logger;
 
-        public GetBookByIdQueryHandler(FakeDatabase fakeDatabase)
+        public GetBookByIdQueryHandler(IBookRepository bookRepository, ILogger<GetBookByIdQueryHandler> logger)
         {
-            _fakeDatabase = fakeDatabase;
+            _bookRepository = bookRepository;
+            _logger = logger;
         }
-        public Task<Book> Handle(GetBookByIdQuery request, CancellationToken cancellationToken)
+        public async Task<OperationResult<Book>> Handle(GetBookByIdQuery request, CancellationToken cancellationToken)
         {
-            Book bookToGet = _fakeDatabase.GetBookById(request.Id);
+            _logger.LogInformation("Handling GetBookByIdQuery for Book Id: {BookId}", request.Id);
 
-            Book wantedBok = _fakeDatabase.Books.Where(Book => Book.Id == request.Id).FirstOrDefault()!;
+            if(request.Id == Guid.Empty)
+            {
+                _logger.LogWarning("GetBookByIdQuery received with empty Id.");
+                return OperationResult<Book>.Failure("Id cant be empty");
+            }
 
-            return Task.FromResult(wantedBok);
+            var book = await _bookRepository.GetBookById(request.Id);
+            if(book == null)
+            {
+                _logger.LogWarning("GetBookByIdQuery received a non-existent Book with Id: {BookId}", request.Id);
+                return OperationResult<Book>.Failure("Book was not found");
+            }
+            _logger.LogInformation("Book with Id: {BookId} found.", request.Id);
+            return OperationResult<Book>.Successfull(book);
 
-            bookToGet = _fakeDatabase.GetBookById(request.Id);
-            //bookToGet.Title = request.GetBook.Title;
-
-
-            return Task.FromResult(bookToGet);
+            //try
+            //{
+                //var bookToGet = _bookRepository.GetBookById(request.Id);
+                //return Task.FromResult(OperationResult<Book>.Success(new Book
+                //{
+                    //Id = bookToGet.Id,
+                    //Title = bookToGet.Title,
+                    //Description = bookToGet.Description
+                //}));
+            //}
+            //catch
+            //{
+                //return Task.FromResult(OperationResult<BookDto>.Failure("Book not found"));
+            //}
         }
     }
 }
