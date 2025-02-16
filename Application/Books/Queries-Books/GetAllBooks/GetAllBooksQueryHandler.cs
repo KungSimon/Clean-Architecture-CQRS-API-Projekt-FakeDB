@@ -35,7 +35,7 @@ namespace Application.Books.Queries_Books.GetAllBooks
                 return OperationResult<List<Book>>.Failure("No books found");
             }
             _logger.LogInformation("Found {BookCount} books", books.Count());
-            return OperationResult<List<Book>>.Successfull(books);
+            return OperationResult<List<Book>>.Successfull(books.ToList(), "Books retrived successfully.");
         }
     }
 }

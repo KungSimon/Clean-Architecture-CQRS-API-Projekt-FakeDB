@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Application.Books.Commands_Books.DeleteBook
 {
-    public class DeleteBookCommandHandler : IRequestHandler<DeleteBookCommand, OperationResult<Book>>
+    public class DeleteBookCommandHandler : IRequestHandler<DeleteBookCommand, OperationResult<List<Book>>>
     {
         private readonly IBookRepository _bookRepository;
         private readonly ILogger<DeleteBookCommandHandler> _logger;
@@ -21,34 +21,19 @@ namespace Application.Books.Commands_Books.DeleteBook
             _logger = logger;
         }
 
-        public async Task<OperationResult<Book>> Handle(DeleteBookCommand request, CancellationToken cancellationToken)
+        public async Task<OperationResult<List<Book>>> Handle(DeleteBookCommand request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Handling RemoveBookCommand for Book Id: {BookId}", request.BookId);
-
-            try
+            var book = await _bookRepository.GetBookByIdAsync(request.BookId);
+            if (book == null)
             {
-                if (request.BookId == Guid.Empty)
-                {
-                    _logger.LogWarning("RemoveBookCommand received with empty Id.");
-                    return OperationResult<Book?>.Failure("Id cannot be empty.");
-                }
-
-                var book = await _bookRepository.GetBookByIdAsync(request.BookId);
-                if (book == null)
-                {
-                    _logger.LogWarning("RemoveBookCommand received for non-existent Book with Id: {BookId}", request.BookId);
-                    return OperationResult<Book?>.Failure("Book not found.");
-                }
-
-                await _bookRepository.DeleteBookAsync(request.BookId);
-                _logger.LogInformation("Book with Id: {BookId} removed successfully.", request.BookId);
-                return OperationResult<Book?>.Successfull(book);
+                return OperationResult<List<Book>>.Failure("Book not found.");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while removing the book with Id: {BookId}", request.BookId);
-                return OperationResult<Book?>.Failure($"An error occurred while removing the book: {ex.Message}");
-            }
+
+            await _bookRepository.DeleteBookAsync(request.BookId);
+
+            var books = await _bookRepository.GetAllBooksAsync();
+            return OperationResult<List<Book>>.Successfull(books.ToList(), "Book sucessfully deleted");
+
         }
     }
 }

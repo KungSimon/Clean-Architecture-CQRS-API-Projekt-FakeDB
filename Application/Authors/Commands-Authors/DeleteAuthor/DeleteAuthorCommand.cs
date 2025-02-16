@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Authors.Commands_Authors.DeleteAuthor
 {
-    public class DeleteAuthorCommand : IRequest<OperationResult<Author>>
+    public class DeleteAuthorCommand : IRequest<OperationResult<List<Author>>>
     {
         public DeleteAuthorCommand(Guid authorId)
         {

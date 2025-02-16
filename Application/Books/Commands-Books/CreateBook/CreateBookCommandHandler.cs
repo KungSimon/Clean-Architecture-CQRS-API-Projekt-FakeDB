@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Application.Books.Commands.CreateBook
 {
-    public class CreateBookCommandHandler : IRequestHandler<CreateBookCommand, OperationResult<Book>>
+    public class CreateBookCommandHandler : IRequestHandler<CreateBookCommand, OperationResult<List<Book>>>
     {
         private readonly IBookRepository _bookRepository;
         private readonly ILogger<CreateBookCommandHandler> _logger;
@@ -21,21 +21,18 @@ namespace Application.Books.Commands.CreateBook
             _logger = logger;
         }
 
-        public async Task<OperationResult<Book>> Handle(CreateBookCommand request, CancellationToken cancellationToken)
+        public async Task<OperationResult<List<Book>>> Handle(CreateBookCommand request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(request.NewBook.Title) || string.IsNullOrEmpty(request.NewBook.Description))
+            var books = await _bookRepository.GetAllBooksAsync();
+            if(books.Any(book => book.Title == request.NewBook.Title))
             {
-                return OperationResult<Book>.Failure("Title and Description are required");
+                return OperationResult<List<Book>>.Failure("A book with this title already exists");
             }
 
-            // Create a new book using the Book constructor
-            var newBook = new Book(request.NewBook.Id, request.NewBook.Title, request.NewBook.Description);
+            await _bookRepository.AddBookAsync(request.NewBook);
 
-            // Save the book using the repository
-            await _bookRepository.AddBookAsync(newBook);
-
-            // Return a successful operation result with the new book
-            return OperationResult<Book>.Successfull(newBook);
+            books = await _bookRepository.GetAllBooksAsync();
+            return OperationResult<List<Book>>.Successfull(books.ToList(), "Book sucessfully added");
         }
     }
 }

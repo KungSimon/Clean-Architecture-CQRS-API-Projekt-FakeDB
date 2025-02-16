@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Application.Authors.Queries_Authors.GetAuthor
 {
-    public class GetAuthorByIdQueryHandler : IRequestHandler<GetAuthorByIdQuery, OperationResult<Author>>
+    public class GetAuthorByIdQueryHandler : IRequestHandler<GetAuthorByIdQuery, OperationResult<List<Author>>>
     {
         private readonly IAuthorRepository _authorRepository;
         private readonly ILogger<GetAuthorByIdQueryHandler> _logger;
@@ -20,24 +20,14 @@ namespace Application.Authors.Queries_Authors.GetAuthor
             _authorRepository = authorRepository;
             _logger = logger;
         }
-        public async Task<OperationResult<Author>> Handle(GetAuthorByIdQuery request, CancellationToken cancellationToken)
+        public async Task<OperationResult<List<Author>>> Handle(GetAuthorByIdQuery request, CancellationToken cancellationToken)
         {
-            try
+            var author = await _authorRepository.GetAuthorByIdAsync(request.Id);
+            if (author == null)
             {
-                var authorToGet = await _authorRepository.GetAuthorByIdAsync(request.Id);
-                if (authorToGet == null)
-                {
-                    _logger.LogError("Author not found");
-                    return OperationResult<Author>.Failure("Author not found");
-                }
-                _logger.LogInformation("Author found");
-                return OperationResult<Author>.Successfull(authorToGet);
+                return OperationResult<List<Author>>.Failure($"Author with ID {request.Id} not found");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while getting the author");
-                return OperationResult<Author>.Failure("An error occurred while getting the author");
-            }
+            return OperationResult<List<Author>>.Successfull(new List<Author> { author }, "Test Author");
         }
     }
 }

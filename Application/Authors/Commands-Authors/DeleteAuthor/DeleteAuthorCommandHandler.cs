@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Application.Authors.Commands_Authors.DeleteAuthor
 {
-    public class DeleteAuthorCommandHandler : IRequestHandler<DeleteAuthorCommand, OperationResult<Author?>>
+    public class DeleteAuthorCommandHandler : IRequestHandler<DeleteAuthorCommand, OperationResult<List<Author>>>
     {
         private readonly IAuthorRepository _authorRepository;
         private readonly ILogger<DeleteAuthorCommandHandler> _logger;
@@ -22,25 +22,17 @@ namespace Application.Authors.Commands_Authors.DeleteAuthor
             _logger = logger;
         }
 
-        //public Task<string> Handle(DeleteAuthorCommand request, CancellationToken cancellationToken)
-        //{
-        //var deletedAuthor =  _authorRepository.DeleteAuthor(request.AuthorId);
-        //return Task.FromResult("authorToDelete");
-        //}
-
-        public async Task<OperationResult<Author?>> Handle(DeleteAuthorCommand request, CancellationToken cancellationToken)
+        public async Task<OperationResult<List<Author>>> Handle(DeleteAuthorCommand request, CancellationToken cancellationToken)
         {
-            try
+            var author = await _authorRepository.GetAuthorByIdAsync(request.AuthorId);
+            if (author == null)
             {
-                var deletedAuthor = await _authorRepository.DeleteAuthorAsync(request.AuthorId);
-                _logger.LogInformation("Author Deleted");
-                return OperationResult<Author?>.Successfull(deletedAuthor);
+                return OperationResult<List<Author>>.Failure("Author not found.");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Author not Deleted");
-                return OperationResult<Author?>.Failure("Author not Deleted");
-            }
+            await _authorRepository.DeleteAuthorAsync(request.AuthorId);
+
+            var authors = await _authorRepository.GetAllAuthorsAsync();
+            return OperationResult<List<Author>>.Successfull(authors.ToList(), "Author successfully deleted.");
         }
     }
 }

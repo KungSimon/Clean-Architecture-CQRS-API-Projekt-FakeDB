@@ -29,31 +29,12 @@ namespace Application.Authors.Commands_Authors.UpdateAuthor
                 return OperationResult<List<Author>>.Failure("Author not found.");
             }
 
-            // Update the author's properties
             author.Name = request.UpdatedAuthor.Name;
 
-            // Save changes
             await _authorRepository.AddAuthorAsync(author);
 
-            // Return the updated list of authors
             var authors = await _authorRepository.GetAllAuthorsAsync();
             return OperationResult<List<Author>>.Successfull(authors.ToList(), "Author successfully updated.");
         }
-
-        //async Task<OperationResult<Author>> IRequestHandler<UpdateAuthorByIdCommand, OperationResult<Author>>.Handle(UpdateAuthorByIdCommand request, CancellationToken cancellationToken)
-        //{
-            //var authorToUpdate = _authorRepository.GetAuthorById(request.AuthorId);
-            //try
-            //{
-                //_authorRepository.UpdateAuthor(request.AuthorId,request.UpdatedAuthor);
-                //_logger.LogInformation("Author updated");
-                //return await Task.FromResult(OperationResult<Author>.Successfull(request.UpdatedAuthor));
-            //}
-            //catch (Exception ex)
-            //{
-                //_logger.LogError(ex, "Author not updated");
-                //return OperationResult<Author>.Failure("Author not updated");
-            //}
-        //}
     }
 }

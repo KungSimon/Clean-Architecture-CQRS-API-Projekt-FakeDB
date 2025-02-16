@@ -33,6 +33,7 @@ namespace Application.Books.Commands.UpdateBook
 
             book.Title = request.UpdatedBook.Title;
             book.Description = request.UpdatedBook.Description;
+            book.AuthorId = request.UpdatedBook.AuthorId;
             //book.Id = request.UpdatedBook.Id;
 
             await _bookRepository.UpdateBookAsync(book);
