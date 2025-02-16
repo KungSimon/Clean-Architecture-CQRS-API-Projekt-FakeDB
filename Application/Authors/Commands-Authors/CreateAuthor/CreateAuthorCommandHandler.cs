@@ -21,8 +21,8 @@ namespace Application.Authors.Commands_Authors.CreateAuthor
             _logger = logger;
         }
 
-         async Task<OperationResult<Author>> IRequestHandler<CreateAuthorCommand, OperationResult<Author>>.Handle(CreateAuthorCommand request, CancellationToken cancellationToken)
-         {
+        public async Task<OperationResult<Author>> Handle(CreateAuthorCommand request, CancellationToken cancellationToken)
+        {
             var authors = await _authorRepository.GetAllAuthorsAsync();
             if (authors.Any(author => author.Name == request.NewAuthor.Name))
             {

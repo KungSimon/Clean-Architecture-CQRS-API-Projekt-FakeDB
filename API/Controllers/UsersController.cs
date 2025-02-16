@@ -1,5 +1,6 @@
-﻿using Application.Dtos;
-using Application.Dtos.UserDtos;
+﻿using API.DTOs;
+using Application.Dtos;
+using Application.Interfaces.RepositoryInterfaces;
 using Application.Users.Commands_User.AddNewUser;
 using Application.Users.Queries_Users.GetAllUsers;
 using Application.Users.Queries_Users.LoginUsers;
@@ -14,38 +15,44 @@ namespace API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        internal readonly IMediator _mediator;
+        private readonly IMediator _mediator;
+        private readonly IPasswordService _passwordService;
 
-        public UsersController(IMediator mediator)
+        public UsersController(IMediator mediator, IPasswordService passwordService)
         {
             _mediator = mediator;
+            _passwordService = passwordService;
         }
 
-        [HttpGet]
-        [Route("getAllUsers")]
-        public async Task<IActionResult> GetAllUsers()
-        {
-            return Ok(await _mediator.Send(new GetAllUsersQuery()));
-        }
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register([FromBody] User newUser)
+        public async Task<IActionResult> Register([FromBody] AddUserDto userDto)
         {
-            return Ok(await _mediator.Send(new AddNewUserCommand(newUser)));
-        }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //[HttpPost]
-        //[Route("Login")]
-        //public async Task<IActionResult> Login([FromBody] User userWantingToLogIn)
-        //{
-            //var userDto = new UserDto
-            //{
-                //UserName = userWantingToLogIn.UserName,
-                //Password = userWantingToLogIn.Password
-                //// Map other properties as needed
-            //};
-            //return Ok(await _mediator.Send(new LoginUserQuery(userDto)));
-        //}
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = userDto.Username,
+                Email = userDto.Email,
+                PasswordHash = userDto.Password,
+            };
+
+            Console.WriteLine($"Registering user: {user.Username}, Email: {user.Email}, PasswordHash: {user.PasswordHash}");
+
+            var command = new AddNewUserCommand(user);
+            var result = await _mediator.Send(command);
+
+            if (result.IsSuccessful)
+            {
+                return Ok(new { result.Message, UserId = result.Data.Id });
+            }
+
+            return BadRequest(result.Message);
+        }
     }
 }
