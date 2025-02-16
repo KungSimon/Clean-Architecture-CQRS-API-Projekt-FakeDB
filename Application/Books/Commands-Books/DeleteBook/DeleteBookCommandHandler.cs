@@ -33,14 +33,14 @@ namespace Application.Books.Commands_Books.DeleteBook
                     return OperationResult<Book?>.Failure("Id cannot be empty.");
                 }
 
-                var book = await _bookRepository.GetBookById(request.BookId);
+                var book = await _bookRepository.GetBookByIdAsync(request.BookId);
                 if (book == null)
                 {
                     _logger.LogWarning("RemoveBookCommand received for non-existent Book with Id: {BookId}", request.BookId);
                     return OperationResult<Book?>.Failure("Book not found.");
                 }
 
-                await _bookRepository.DeleteBook(request.BookId);
+                await _bookRepository.DeleteBookAsync(request.BookId);
                 _logger.LogInformation("Book with Id: {BookId} removed successfully.", request.BookId);
                 return OperationResult<Book?>.Successfull(book);
             }

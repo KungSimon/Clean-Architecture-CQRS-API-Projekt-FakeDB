@@ -22,26 +22,12 @@ namespace Application.Books.Queries_Books.GetAllBooks
             _bookRepository = bookRepository;
             _logger = logger;
         }
-        //public async Task<List<Book>> Handle(GetAllBooksQuery request, CancellationToken cancellationToken)
-        //{
-        //_logger.LogInformation("Handling GetAllBookQuery");
-
-        //var books = await _bookRepository.GetAllBooks();
-
-        //if (books == null || !books.Any())
-        //{
-        //_logger.LogWarning("No books found.");
-        //return OperationResult<List<Book>>.Failure("No books found");
-        //}
-        //_logger.LogInformation("Found {BookCount} books", books.Count());
-        //return OperationResult<List<Book>>.Successfull(books);
-        //}
 
         public async Task<OperationResult<List<Book>>> Handle(GetAllBooksQuery request, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Handling GetAllBookQuery");
 
-            var books = await _bookRepository.GetAllBooks();
+            var books = await _bookRepository.GetAllBooksAsync();
 
             if (books == null || !books.Any())
             {

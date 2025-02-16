@@ -31,7 +31,7 @@ namespace Application.Books.Queries_Books.GetBook
                 return OperationResult<Book>.Failure("Id cant be empty");
             }
 
-            var book = await _bookRepository.GetBookById(request.Id);
+            var book = await _bookRepository.GetBookByIdAsync(request.Id);
             if(book == null)
             {
                 _logger.LogWarning("GetBookByIdQuery received a non-existent Book with Id: {BookId}", request.Id);
@@ -40,20 +40,6 @@ namespace Application.Books.Queries_Books.GetBook
             _logger.LogInformation("Book with Id: {BookId} found.", request.Id);
             return OperationResult<Book>.Successfull(book);
 
-            //try
-            //{
-                //var bookToGet = _bookRepository.GetBookById(request.Id);
-                //return Task.FromResult(OperationResult<Book>.Success(new Book
-                //{
-                    //Id = bookToGet.Id,
-                    //Title = bookToGet.Title,
-                    //Description = bookToGet.Description
-                //}));
-            //}
-            //catch
-            //{
-                //return Task.FromResult(OperationResult<BookDto>.Failure("Book not found"));
-            //}
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Application.Authors.Commands_Authors.DeleteAuthor
         {
             try
             {
-                var deletedAuthor = await _authorRepository.DeleteAuthor(request.AuthorId);
+                var deletedAuthor = await _authorRepository.DeleteAuthorAsync(request.AuthorId);
                 _logger.LogInformation("Author Deleted");
                 return OperationResult<Author?>.Successfull(deletedAuthor);
             }

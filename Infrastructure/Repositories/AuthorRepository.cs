@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Author> AddAuthor(Author author)
+        public async Task<Author> AddAuthorAsync(Author author)
         {
             _logger.LogInformation("Adding a new author: {Name}", author.Name);
             _realDatabase.Authors.Add(author);
@@ -30,19 +30,19 @@ namespace Infrastructure.Repositories
             return author;
         }
 
-        public async Task<List<Author>> GetAllAuthors()
+        public async Task<List<Author>> GetAllAuthorsAsync()
         {
             _logger.LogInformation("Retrieving all authors");
             return _realDatabase.Authors.ToList();
         }
 
-        public async Task<Author> GetAuthorById(Guid id)
+        public async Task<Author> GetAuthorByIdAsync(Guid id)
         {
             _logger.LogInformation("Retrieving author with Id: {AuthorId}", id);
             return await _realDatabase.Authors.FindAsync(id);
         }
 
-        public async Task<Author> UpdateAuthor(Guid id, Author author)
+        public async Task<Author> UpdateAuthorAsync(Guid id, Author author)
         {
             _logger.LogInformation("Updating author with Id: {AuthorId}", id);
             _realDatabase.Authors.Update(author);
@@ -51,7 +51,7 @@ namespace Infrastructure.Repositories
             return author;
         }
 
-        public async Task<Author> DeleteAuthor(Guid id)
+        public async Task<Author> DeleteAuthorAsync(Guid id)
         {
             _logger.LogInformation("Deleting author with Id: {AuthorId}", id);
             var author = await _realDatabase.Authors.FindAsync(id);

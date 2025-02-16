@@ -24,7 +24,7 @@ namespace Application.Authors.Queries_Authors.GetAuthor
         {
             try
             {
-                var authorToGet = await _authorRepository.GetAuthorById(request.Id);
+                var authorToGet = await _authorRepository.GetAuthorByIdAsync(request.Id);
                 if (authorToGet == null)
                 {
                     _logger.LogError("Author not found");

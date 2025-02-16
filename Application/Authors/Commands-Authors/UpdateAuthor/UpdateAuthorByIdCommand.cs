@@ -8,15 +8,13 @@ using System.Threading.Tasks;
 
 namespace Application.Authors.Commands_Authors.UpdateAuthor
 {
-    public class UpdateAuthorByIdCommand : IRequest<OperationResult<Author>>
+    public class UpdateAuthorByIdCommand : IRequest<OperationResult<List<Author>>>
     {
-        public UpdateAuthorByIdCommand(Guid _authorId, Author _updatedAuthor)
+        public UpdateAuthorByIdCommand(Author updatedAuthor)
         {
-            AuthorId = _authorId;
-            UpdatedAuthor = _updatedAuthor;
+            UpdatedAuthor = updatedAuthor;
         }
 
-        public Guid AuthorId { get; }
         public Author UpdatedAuthor { get; }
     }
 }

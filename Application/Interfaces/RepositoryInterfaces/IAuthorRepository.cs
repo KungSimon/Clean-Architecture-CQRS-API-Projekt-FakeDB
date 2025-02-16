@@ -9,14 +9,14 @@ namespace Application.Interfaces.RepositoryInterfaces
 {
     public interface IAuthorRepository
     {
-        Task<Author> AddAuthor(Author author);
+        Task<Author> AddAuthorAsync(Author author);
 
-        Task<List<Author>> GetAllAuthors();
+        Task<List<Author>> GetAllAuthorsAsync();
 
-        Task<Author?> GetAuthorById(Guid id);
+        Task<Author?> GetAuthorByIdAsync(Guid id);
 
-        Task<Author> UpdateAuthor(Guid id,Author author);
+        Task<Author> UpdateAuthorAsync(Guid id,Author author);
 
-        Task<Author> DeleteAuthor(Guid id);
+        Task<Author> DeleteAuthorAsync(Guid id);
     }
 }

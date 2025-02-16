@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
             _realDatabase = realDatabase;
             _logger = logger;
         }
-        public async Task<Book> AddBook(Book book)
+        public async Task<Book> AddBookAsync(Book book)
         {
             _logger.LogInformation("Adding a new book: {Title}", book.Title);
             _realDatabase.Books.Add(book);
@@ -29,30 +29,30 @@ namespace Infrastructure.Repositories
             return book;
         }
 
-        public async Task<List<Book>> GetAllBooks()
+        public async Task<List<Book>> GetAllBooksAsync()
         {
             _logger.LogInformation("Retrieving all books"); 
             return await _realDatabase.Books.ToListAsync();
         }
 
 
-        public async Task<Book> GetBookById(Guid id)
+        public async Task<Book> GetBookByIdAsync(Guid id)
         {
             _logger.LogInformation("Retrieving book with Id: {BookId}", id);
             return await _realDatabase.Books.FindAsync(id);
         }
 
 
-        public async Task<Book> UpdateBook(Guid id, Book book)
+        public async Task<Book> UpdateBookAsync(Book book)
         {
-            _logger.LogInformation("Updating book with Id: {BookId}", id);
+            _logger.LogInformation("Updating book with Id: {BookId}", book.Id);
             _realDatabase.Books.Update(book);
             await _realDatabase.SaveChangesAsync();
-            _logger.LogInformation("Book updated successfully: {BookId}", id);
+            _logger.LogInformation("Book updated successfully: {BookId}", book.Id);
             return book;
         }
 
-        public async Task<string> DeleteBook(Guid id)
+        public async Task<string> DeleteBookAsync(Guid id)
         {
             _logger.LogInformation("Deleting book with Id: {BookId}", id);
             var book = await _realDatabase.Books.FindAsync(id);

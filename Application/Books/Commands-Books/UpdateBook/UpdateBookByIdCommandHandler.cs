@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Application.Books.Commands.UpdateBook
 {
-    public class UpdateBookByIdCommandHandler : IRequestHandler<UpdateBookByIdCommand, OperationResult<Book>>
+    public class UpdateBookByIdCommandHandler : IRequestHandler<UpdateBookByIdCommand, OperationResult<List<Book>>>
     {
         private readonly IBookRepository _bookRepository;
         private readonly ILogger<UpdateBookByIdCommandHandler> _logger;
@@ -21,70 +21,27 @@ namespace Application.Books.Commands.UpdateBook
             _logger = logger;
         }
 
-        public async Task<OperationResult<Book>> Handle(UpdateBookByIdCommand request, CancellationToken cancellationToken)
+
+        public async Task<OperationResult<List<Book>>> Handle(UpdateBookByIdCommand request, CancellationToken cancellationToken)
         {
-            var bookToUpdate = await _bookRepository.GetBookById(request.Id);
-            try
+            var book = await _bookRepository.GetBookByIdAsync(request.UpdatedBook.Id);
+            if(book == null)
             {
-                _bookRepository.UpdateBook(request.Id, request.UpdatedBook);
-                _logger.LogInformation("Book updated");
-                return await Task.FromResult(OperationResult<Book>.Successfull(request.UpdatedBook));
+                _logger.LogError("Book not updated");
+                return OperationResult<List<Book>>.Failure("Book not found");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Book not updated");
-                return OperationResult<Book>.Failure("Book not updated");
-            }
+
+            book.Title = request.UpdatedBook.Title;
+            book.Description = request.UpdatedBook.Description;
+            //book.Id = request.UpdatedBook.Id;
+
+            await _bookRepository.UpdateBookAsync(book);
+            _logger.LogInformation("Book updated");
+            var books = await _bookRepository.GetAllBooksAsync();
+            return OperationResult<List<Book>>.Successfull(books.ToList(), "Book successfully uppdated");
         }
     }
 }
 
-        //public async Task<OperationResult<Book>> Handle(UpdateBookByIdCommand request, CancellationToken cancellationToken)
-        //{
-        //_logger.LogInformation("Handling UpdateBookCommand for Book Id: {BookId}", request.Book?.Id);
 
-        //try
-        //{
-        //if (request.Book == null)
-        //{
-        //_logger.LogWarning("UpdateBookCommand received with null Book.");
-        //return OperationResult<Book?>.Failure("Book cannot be null.");
-        //}
-
-        //if (request.Book.Id == Guid.Empty)
-        //{
-        //_logger.LogWarning("UpdateBookCommand received with empty Id.");
-        //return OperationResult<Book?>.Failure("Id cannot be empty.");
-        //}
-
-        //if (string.IsNullOrWhiteSpace(request.Book.Title))
-        //{
-        //_logger.LogWarning("UpdateBookCommand received with empty Book title.");
-        //return OperationResult<Book?>.Failure("Book title cannot be empty.");
-        //}
-
-        //if (request.Book.Author == null)
-        //{
-        //_logger.LogWarning("UpdateBookCommand received with null Author.");
-        //return OperationResult<Book?>.Failure("Author cannot be null.");
-        //}
-
-        //var existingBook = await _bookRepository.GetBookById(request.Book.Id);
-        //if (existingBook == null)
-        //{
-        //_logger.LogWarning("UpdateBookCommand received for non-existent Book with Id: {BookId}", request.Book.Id);
-        //return OperationResult<Book?>.Failure("Book with that ID does not exist.");
-        //}
-
-        //var updatedBook = await _bookRepository.UpdateBook(request.Book.Id, request.Book);
-        //_logger.LogInformation("Book with Id: {BookId} updated successfully.", request.Book.Id);
-        //return OperationResult<Book?>.Successfull(updatedBook);
-        //}
-        //catch (Exception ex)
-        //{
-        //_logger.LogError(ex, "An error occurred while updating the book with Id: {BookId}", request.Book?.Id);
-        //return OperationResult<Book?>.Failure($"An error occurred while updating the book: {ex.Message}");
-        //}
-        //}
-    
 

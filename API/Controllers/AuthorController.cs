@@ -20,65 +20,107 @@ namespace API.Controllers
     [Route("[controller]")]
     public class AuthorController : ControllerBase
     {
-        //private readonly FakeDatabase _database;
-        internal readonly IMediator _mediator;
+        private readonly IMediator _mediator;
+        private readonly ILogger<AuthorController> _logger;
 
-
-        //public AuthorController(FakeDatabase database, IMediator mediator)
-        //{
-            //_database = database;
-            //_mediator = mediator;
-        //}
-
-        public AuthorController(IMediator mediator)
-        {
-            //_database = database;
+        public AuthorController(IMediator mediator, ILogger<AuthorController> logger)
+        {   
             _mediator = mediator;
+            _logger = logger;
         }
-
-
-        //[HttpPost]
-        //[Route("addNewAuthor")]
-        //public async void Post([FromBody] Author authorToAdd)
-        //{
-        //await _mediator.Send(new CreateAuthorCommand(authorToAdd));
-        //}
 
         [HttpPost]
         [Route("addNewAuthor")]
-        public async Task<IActionResult> Post([FromBody] Author authorToAdd)
+        public async Task<IActionResult> AddAuthor([FromBody] Author author)
         {
-            return Ok(await _mediator.Send(new CreateAuthorCommand(authorToAdd)));
+            try
+            {
+                var command = new CreateAuthorCommand(author);
+                var result = await _mediator.Send(command);
+                return Ok(result);
+                //return CreatedAtAction(nameof(GetAuthorById), new { id = result.Result.Id }, result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpGet]
         [Route("getAuthorById/{authorId}")]
-        public async Task<IActionResult> GetAuthorById(Guid authorId)
+        public async Task<IActionResult> GetAuthorById(Guid id)
         {
-            return Ok(await _mediator.Send(new GetAuthorByIdQuery(authorId)));
+
+            try
+            {
+                var query = new GetAuthorByIdQuery(id);
+                var result = await _mediator.Send(query);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+
+            //return Ok(await _mediator.Send(new GetAuthorByIdQuery(id)));
         }
 
         [HttpGet]
         [Route("getAllAuthors")]
         public async Task<IActionResult> GetAllAuthors()
         {
-            var authors = (await _mediator.Send(new GetAllAuthorsQuery()));
+            try
+            {
+                var query = new GetAllAuthorsQuery();
+                var result = await _mediator.Send(query);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
+        
+
+        var authors = (await _mediator.Send(new GetAllAuthorsQuery()));
             return Ok(authors);
             //return Ok("GET ALL BOOKS");
         }
 
         [HttpPatch]
-        [Route("updateAuthor/{authorId}")]
-        public async Task<IActionResult> UpdateAuthor(Guid authorId, [FromBody] Author author)
+        [Route("updateAuthor/{id}")]
+        public async Task<IActionResult> UpdateAuthor(Guid id, [FromBody] Author author)
         {
-            return Ok(await _mediator.Send(new UpdateAuthorByIdCommand(authorId, author)));
+            try
+            {
+                //author.Id = id;
+                var command = new UpdateAuthorByIdCommand(author);
+                var result = await _mediator.Send(command);
+                return Ok(result);
+
+            }
+            catch(ArgumentException ex)
+            {
+                return NotFound(new { message = ex.Message }); 
+            }
+
+            //return Ok(await _mediator.Send(new UpdateAuthorByIdCommand(id, author)));
         }
 
         [HttpDelete]
         [Route("deleteAuthor/{authorId}")]
-        public async Task<IActionResult> DeleteAuthor(Guid authorId)
+        public async Task<IActionResult> DeleteAuthor(Guid id)
         {
-            return Ok(await _mediator.Send(new DeleteAuthorCommand(authorId)));
+            try
+            {
+                var command = new DeleteAuthorCommand(id);
+                await _mediator.Send(command);
+                return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            //return Ok(await _mediator.Send(new DeleteAuthorCommand(authorId)));
         }
     }
 }
