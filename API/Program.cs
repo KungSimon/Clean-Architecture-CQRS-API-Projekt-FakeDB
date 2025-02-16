@@ -89,6 +89,9 @@ namespace API
 
             builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection"));
 
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Application.AssemblyReference).Assembly));
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

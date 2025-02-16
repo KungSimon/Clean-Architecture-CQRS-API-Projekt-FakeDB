@@ -9,10 +9,10 @@ namespace Application.Interfaces.RepositoryInterfaces
 {
     public interface IBookRepository
     {
-        Task<Book> AddBook(Book book);
-        Task<List<Book>> GetAllBooks();
-        Task<Book> GetBookById(Guid id);
-        Task<Book> UpdateBook(Guid id, Book book);
-        Task<string> DeleteBook(Guid id);
+        Task<Book> AddBookAsync(Book book);
+        Task<List<Book>> GetAllBooksAsync();
+        Task<Book> GetBookByIdAsync(Guid id);
+        Task<Book> UpdateBookAsync(Book book);
+        Task<string> DeleteBookAsync(Guid id);
     }
 }

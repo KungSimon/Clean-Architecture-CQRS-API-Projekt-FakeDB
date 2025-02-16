@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Application.Authors.Commands_Authors.UpdateAuthor
 {
-    public class UpdateAuthorByIdCommandHandler : IRequestHandler<UpdateAuthorByIdCommand, OperationResult<Author>>
+    public class UpdateAuthorByIdCommandHandler : IRequestHandler<UpdateAuthorByIdCommand, OperationResult<List<Author>>>
     {
         private readonly IAuthorRepository _authorRepository;
         private readonly ILogger<UpdateAuthorByIdCommandHandler> _logger;
@@ -21,39 +21,39 @@ namespace Application.Authors.Commands_Authors.UpdateAuthor
             _logger = logger;
         }
 
-        //public async Task<Author> Handle(UpdateAuthorByIdCommand request, CancellationToken cancellationToken)
+        public async Task<OperationResult<List<Author>>> Handle(UpdateAuthorByIdCommand request, CancellationToken cancellationToken)
+        {
+            var author = await _authorRepository.GetAuthorByIdAsync(request.UpdatedAuthor.Id);
+            if (author == null)
+            {
+                return OperationResult<List<Author>>.Failure("Author not found.");
+            }
+
+            // Update the author's properties
+            author.Name = request.UpdatedAuthor.Name;
+
+            // Save changes
+            await _authorRepository.AddAuthorAsync(author);
+
+            // Return the updated list of authors
+            var authors = await _authorRepository.GetAllAuthorsAsync();
+            return OperationResult<List<Author>>.Successfull(authors.ToList(), "Author successfully updated.");
+        }
+
+        //async Task<OperationResult<Author>> IRequestHandler<UpdateAuthorByIdCommand, OperationResult<Author>>.Handle(UpdateAuthorByIdCommand request, CancellationToken cancellationToken)
         //{
+            //var authorToUpdate = _authorRepository.GetAuthorById(request.AuthorId);
             //try
             //{
-                //_authorRepository.UpdateAuthor(request.AuthorId);
-
+                //_authorRepository.UpdateAuthor(request.AuthorId,request.UpdatedAuthor);
+                //_logger.LogInformation("Author updated");
+                //return await Task.FromResult(OperationResult<Author>.Successfull(request.UpdatedAuthor));
             //}
             //catch (Exception ex)
             //{
-                //return null;
+                //_logger.LogError(ex, "Author not updated");
+                //return OperationResult<Author>.Failure("Author not updated");
             //}
-            ////Author authorToUpdate = _fakeDatabase.Authors.FirstOrDefault(Author => Author.Id == request.AuthorId)!;
-
-            ////authorToUpdate.Name = request.UpdatedAuthor.Name;
-            ////authorToUpdate.Bio = request.UpdatedAuthor.Bio;
-
-            ////return Task.FromResult(authorToUpdate);
         //}
-
-        async Task<OperationResult<Author>> IRequestHandler<UpdateAuthorByIdCommand, OperationResult<Author>>.Handle(UpdateAuthorByIdCommand request, CancellationToken cancellationToken)
-        {
-            var authorToUpdate = _authorRepository.GetAuthorById(request.AuthorId);
-            try
-            {
-                _authorRepository.UpdateAuthor(request.AuthorId,request.UpdatedAuthor);
-                _logger.LogInformation("Author updated");
-                return await Task.FromResult(OperationResult<Author>.Successfull(request.UpdatedAuthor));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Author not updated");
-                return OperationResult<Author>.Failure("Author not updated");
-            }
-        }
     }
 }

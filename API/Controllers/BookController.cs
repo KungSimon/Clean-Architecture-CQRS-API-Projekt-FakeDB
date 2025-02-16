@@ -16,40 +16,37 @@ namespace API.Controllers
     [Route("[controller]")]
     public class BookController : ControllerBase
     {
-        //CRUD GET UPDATE/PUT/PATCH POST DELETE
-        //private readonly FakeDatabase _database;
-        internal readonly IMediator _mediator;
-
-        //public BookController(FakeDatabase database, IMediator mediator)
-        //{
-            //_database = database;
-            //_mediator = mediator;
-        //}
+        private readonly IMediator _mediator;
+        
 
         public BookController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        //[HttpPost]
-        //[Route("addNewBook")]
-        //public async void Post([FromBody] Book bookToAdd)
-        //{
-        //await _mediator.Send(new CreateBookCommand(bookToAdd));
-        //}
 
         [HttpPost]
         [Route("addNewBook")]
-        public async Task<IActionResult> Post([FromBody] Book bookToAdd)
+        public async Task<IActionResult> AddBook([FromBody] Book book)
         {
-            return Ok(await _mediator.Send(new CreateBookCommand(bookToAdd)));
+            var command = new CreateBookCommand(book);
+            var result = await _mediator.Send(command);
+            return Ok(result);
+
+
+            //return Ok(await _mediator.Send(new CreateBookCommand(book)));
         }
 
         [HttpGet]
         [Route("getBookById/{bookId}")]
         public async Task<IActionResult> GetBookById(Guid bookId)
         {
-            return Ok(await _mediator.Send(new GetBookByIdQuery(bookId)));
+            var query = new GetBookByIdQuery(bookId);
+            var result = await _mediator.Send(query);
+            return Ok(result);
+
+
+            //return Ok(await _mediator.Send(new GetBookByIdQuery(bookId)));
         }
 
         [Authorize]
@@ -58,8 +55,12 @@ namespace API.Controllers
         public async Task<IActionResult> GetAllBooks()
         {
 
-            var books = (await _mediator.Send(new GetAllBooksQuery()));
-            return Ok(books);
+            var query = new GetAllBooksQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+
+            //var books = (await _mediator.Send(new GetAllBooksQuery()));
+            //return Ok(books);
             //return Ok("GET ALL BOOKS");
         }
 
@@ -67,14 +68,24 @@ namespace API.Controllers
         [Route("updateBook/{bookId}")]
         public async Task<IActionResult> UpdateBook(Guid bookId, [FromBody] Book book)
         {
-            return Ok(await _mediator.Send(new UpdateBookByIdCommand(book, bookId)));
+            //book.Id = bookId;
+            var command = new UpdateBookByIdCommand(book);
+            var result = await _mediator.Send(command);
+            return Ok(result);
+
+
+            //return Ok(await _mediator.Send(new UpdateBookByIdCommand(book, bookId)));
         }
 
         [HttpDelete]
         [Route("deleteBook/{bookId}")]
         public async Task<IActionResult> DeleteBook(Guid bookId)
         {
-            return Ok(await _mediator.Send(new DeleteBookCommand(bookId)));
+            var commmand = new DeleteBookCommand(bookId);
+            var result = await _mediator.Send(commmand);    
+            return Ok(result);
+
+            //return Ok(await _mediator.Send(new DeleteBookCommand(bookId)));
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Application.Authors.Queries_Authors.GetAllAuthors
         {
             try
             {
-                var authors = await _authorRepository.GetAllAuthors();
+                var authors = await _authorRepository.GetAllAuthorsAsync();
                 if (authors == null || !authors.Any())
                 {
                     _logger.LogError("Authors not found");

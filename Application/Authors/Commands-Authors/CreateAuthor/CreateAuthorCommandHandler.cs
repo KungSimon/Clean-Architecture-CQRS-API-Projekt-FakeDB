@@ -27,7 +27,7 @@ namespace Application.Authors.Commands_Authors.CreateAuthor
          {
             try
             {
-                _authorRepository.AddAuthor(request.NewAuthor);
+                _authorRepository.AddAuthorAsync(request.NewAuthor);
                 _logger.LogInformation("Author created");
                 return await Task.FromResult(OperationResult<Author>.Successfull(request.NewAuthor));
             }

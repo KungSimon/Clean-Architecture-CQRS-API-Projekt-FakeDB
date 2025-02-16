@@ -32,7 +32,7 @@ namespace Application.Books.Commands.CreateBook
             var newBook = new Book(request.NewBook.Id, request.NewBook.Title, request.NewBook.Description);
 
             // Save the book using the repository
-            await _bookRepository.AddBook(newBook);
+            await _bookRepository.AddBookAsync(newBook);
 
             // Return a successful operation result with the new book
             return OperationResult<Book>.Successfull(newBook);
