@@ -9,12 +9,12 @@ namespace Application.Interfaces.RepositoryInterfaces
 {
     public interface IUserRepository
     {
-        Task<User> AddUser(User user);
-        Task<List<User>> GetAllUsers();
-        Task<User> GetUserById(Guid id);
-        Task<User> UpdateUser(Guid id, User user);
-
-        Task<User> LogInUser(string username, string password);
-        Task<string> DeleteUser(Guid id);
+        Task AddUserAsync(User user);
+        Task<IEnumerable<User>> GetAllUsersAsync();
+        Task<User?> GetUserByIdAsync(Guid id);
+        Task UpdateUserAsync(User user);
+        Task DeleteUserAsync(Guid id);
+        Task<User?> GetByUsernameAsync(string username);
+        Task<bool> IsUsernameOrEmailTakenAsync(string username, string email);
     }
 }

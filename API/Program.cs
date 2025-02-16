@@ -7,6 +7,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Infrastructure.Services;
+using Application.Interfaces.RepositoryInterfaces;
 
 namespace API
 {
@@ -91,6 +93,7 @@ namespace API
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Application.AssemblyReference).Assembly));
 
+            builder.Services.AddTransient<IPasswordService, PasswordService>();
 
             var app = builder.Build();
 
@@ -107,6 +110,12 @@ namespace API
 
 
             app.MapControllers();
+            if (app.Environment.IsDevelopment())
+            {
+                var passwordService = new PasswordService();
+                var hashedPassword = passwordService.HashPassword("mypassword");
+                Console.WriteLine($"Development Only: Hashed Password: {hashedPassword}");
+            }
 
             app.Run();
         }

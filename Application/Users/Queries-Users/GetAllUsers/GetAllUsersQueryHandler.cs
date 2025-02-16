@@ -25,7 +25,7 @@ namespace Application.Users.Queries_Users.GetAllUsers
         {
             try
             {
-                var users = await _userRepository.GetAllUsers();
+                var users = await _userRepository.GetAllUsersAsync();
                 if(users == null || !users.Any())
                 {
                     _logger.LogError("Users not found");

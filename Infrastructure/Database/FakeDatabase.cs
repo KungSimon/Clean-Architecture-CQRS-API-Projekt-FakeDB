@@ -9,41 +9,31 @@ namespace Infrastructure.Database
 {
     public class FakeDatabase
     {
-        public List<Book> Books { get { return allBooksFromDB; } set { allBooksFromDB = value; } }
-        public List<Author> Author { get { return allAuthorsFromDB; } set { allAuthorsFromDB = value; } }
-
-        private static List<Book> allBooksFromDB = new List<Book>
-            {
-                new Book("SimonBook1"),
-                new Book("SimonBook2"),
-                new Book("SimonBook3"),
-                new Book("SimonBook4"),
-                new Book("SimonBook5"),
-                new Book("SimonBook5")
-            };
-
-        private static List<Author> allAuthorsFromDB = new List<Author>
-            {
-                new Author("Simon1"),
-                new Author("Simon2"),
-                new Author("Simon3"),
-                new Author("Simon4"),
-                new Author("Simon5"),
-                new Author("Simon6"),
-            };
-
-        public static List<User> Users
+        public List<Book> Books { get; set; } = new();
+        public List<Author> Authors { get; set; } = new();
+        public List<User> Users { get; set; } = new();
+        public FakeDatabase()
         {
-            get { return allUsers; }
-            set { allUsers = value; }
-        }
+            Authors.AddRange(new List<Author>
+        {
+            new Author { Id = Guid.NewGuid(), Name = "J.K. Rowling" },
+            new Author { Id = Guid.NewGuid(), Name = "George R.R. Martin" },
+            new Author { Id = Guid.NewGuid(), Name = "J.R.R. Tolkien" }
+        });
 
-        private static List<User> allUsers = new()
+            Books.AddRange(new List<Book>
+        {
+            new Book { Id = Guid.NewGuid(), Title = "Harry Potter and the Sorcerer's Stone", AuthorId = Authors[0].Id},
+            new Book { Id = Guid.NewGuid(), Title = "A Game of Thrones", AuthorId = Authors[1].Id },
+            new Book { Id = Guid.NewGuid(), Title = "The Hobbit", AuthorId = Authors[2].Id}
+        });
+            Users.Add(new User
             {
-                new User {Id = Guid.NewGuid(), UserName = "Simon"},
-                new User {Id = Guid.NewGuid(), UserName = "Näslund"},
-                new User {Id = Guid.NewGuid(), UserName = "We"}
-            };
+                Id = Guid.NewGuid(),
+                Email = "admin@example.com",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("password"),
+            });
+        }
     }
-
 }
+

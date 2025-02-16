@@ -35,17 +35,17 @@ namespace API.Controllers
             return Ok(await _mediator.Send(new AddNewUserCommand(newUser)));
         }
 
-        [HttpPost]
-        [Route("Login")]
-        public async Task<IActionResult> Login([FromBody] User userWantingToLogIn)
-        {
-            var userDto = new UserDto
-            {
-                UserName = userWantingToLogIn.UserName,
-                Password = userWantingToLogIn.Password
-                // Map other properties as needed
-            };
-            return Ok(await _mediator.Send(new LoginUserQuery(userDto)));
-        }
+        //[HttpPost]
+        //[Route("Login")]
+        //public async Task<IActionResult> Login([FromBody] User userWantingToLogIn)
+        //{
+            //var userDto = new UserDto
+            //{
+                //UserName = userWantingToLogIn.UserName,
+                //Password = userWantingToLogIn.Password
+                //// Map other properties as needed
+            //};
+            //return Ok(await _mediator.Send(new LoginUserQuery(userDto)));
+        //}
     }
 }

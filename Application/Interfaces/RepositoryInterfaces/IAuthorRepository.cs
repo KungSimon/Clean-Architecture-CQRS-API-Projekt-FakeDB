@@ -1,5 +1,6 @@
 ﻿using Domain;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,14 +10,10 @@ namespace Application.Interfaces.RepositoryInterfaces
 {
     public interface IAuthorRepository
     {
-        Task<Author> AddAuthorAsync(Author author);
-
-        Task<List<Author>> GetAllAuthorsAsync();
-
-        Task<Author?> GetAuthorByIdAsync(Guid id);
-
-        Task<Author> UpdateAuthorAsync(Guid id,Author author);
-
-        Task<Author> DeleteAuthorAsync(Guid id);
+        Task AddAuthorAsync(Author author);
+        Task<IEnumerable<Author>> GetAllAuthorsAsync();
+        Task<Author> GetAuthorByIdAsync(Guid id);
+        Task UpdateAuthorAsync(Author author);
+        Task DeleteAuthorAsync(Guid id);
     }
 }
