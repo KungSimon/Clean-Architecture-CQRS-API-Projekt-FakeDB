@@ -14,27 +14,38 @@ namespace Application.Users.Commands_User.AddNewUser
     {
         private readonly IUserRepository _userRepository;
         private readonly ILogger<AddNewUserCommandHandler> _logger;
-        public AddNewUserCommandHandler(IUserRepository userRepository, ILogger<AddNewUserCommandHandler> logger)
+        private readonly IPasswordService _passwordService;
+        public AddNewUserCommandHandler(IUserRepository userRepository, ILogger<AddNewUserCommandHandler> logger, IPasswordService passwordService)
         {
             _userRepository = userRepository;
             _logger = logger;
+            _passwordService = passwordService;
         }
         public async Task<OperationResult<User>> Handle(AddNewUserCommand request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(request.NewUser.UserName) ||
-               string.IsNullOrEmpty(request.NewUser.Password))
+            try
             {
-                return OperationResult<User>.Failure("First name and last name are required");
+                var isTaken = await _userRepository.IsUsernameOrEmailTakenAsync(request.NewUser.Username, request.NewUser.Email);
+                if (isTaken)
+                {
+                    _logger.LogWarning("Failed to add user. Username or email is already taken: {Username}, {Email}",
+                        request.NewUser.Username, request.NewUser.Email);
+
+                    return OperationResult<User>.Failure("Username or email is already taken.");
+                }
+
+                request.NewUser.PasswordHash = _passwordService.HashPassword(request.NewUser.PasswordHash);
+
+                await _userRepository.AddUserAsync(request.NewUser);
+                _logger.LogInformation("User added successfully: {Username}", request.NewUser.Username);
+
+                return OperationResult<User>.Successfull(request.NewUser, "User added successfully.");
             }
-            User userToCreate = new User
+            catch (Exception ex)
             {
-                Id = Guid.NewGuid(),
-                UserName = request.NewUser.UserName,
-                Password = request.NewUser.Password
-            };
-            await _userRepository.AddUser(userToCreate);
-            _logger.LogInformation("User Created");
-            return OperationResult<User>.Successfull(userToCreate);
+                _logger.LogError(ex, "An error occurred while adding a user.");
+                throw;
+            }
         }
     }
 }

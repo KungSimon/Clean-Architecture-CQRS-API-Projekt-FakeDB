@@ -32,23 +32,11 @@ namespace Application.Authors.Commands_Authors.CreateAuthor
             {
                 Id = Guid.NewGuid(),
                 Name = request.NewAuthor.Name,
+                Bio = request.NewAuthor.Bio
             };
 
             await _authorRepository.AddAuthorAsync(newAuthor);
             return OperationResult<Author>.Successfull(newAuthor, "Author successfully added");
-
-
-            try
-            {
-                _authorRepository.AddAuthorAsync(request.NewAuthor);
-                _logger.LogInformation("Author created");
-                return await Task.FromResult(OperationResult<Author>.Successfull(request.NewAuthor));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Author not created");
-                return OperationResult<Author>.Failure("Author not created");
-            }
          }
     }
 }

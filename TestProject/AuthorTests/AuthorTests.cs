@@ -28,7 +28,7 @@
 //            var provider = services.BuildServiceProvider();
 //            _mediator = provider.GetRequiredService<IMediator>();
 //        }
-        
+
 //        [Test]
 //        public void AddNewAuthor_ShouldAddAuthor()
 //        {
