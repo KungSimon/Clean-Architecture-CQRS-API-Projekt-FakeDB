@@ -14,22 +14,22 @@ namespace Infrastructure.Database
 
         private static List<Book> allBooksFromDB = new List<Book>
             {
-                new Book(Guid.NewGuid(), "SimonBook1", "SimonBook1"),
-                new Book(Guid.NewGuid(), "SimonBook2", "Beskrivning2"),
-                new Book(Guid.NewGuid(), "SimonBook3", "Beskrivning3"),
-                new Book(Guid.NewGuid(), "SimonBook4", "Beskrivning4"),
-                new Book(Guid.NewGuid(), "SimonBook5", "Beskrivning5"),
-                new Book(Guid.NewGuid(), "SimonBook5", "Besk")
+                new Book("SimonBook1"),
+                new Book("SimonBook2"),
+                new Book("SimonBook3"),
+                new Book("SimonBook4"),
+                new Book("SimonBook5"),
+                new Book("SimonBook5")
             };
 
         private static List<Author> allAuthorsFromDB = new List<Author>
             {
-                new Author(Guid.NewGuid(), "Simon1", "AuthorBio1"),
-                new Author(Guid.NewGuid(), "Simon2", "AuthorBio2"),
-                new Author(Guid.NewGuid(), "Simon3", "AuthorBio3"),
-                new Author(Guid.NewGuid(), "Simon4", "AuthorBio4"),
-                new Author(Guid.NewGuid(), "Simon5", "AuthorBio5"),
-                new Author(Guid.NewGuid(), "Simon6", "AuthorBio6"),
+                new Author("Simon1"),
+                new Author("Simon2"),
+                new Author("Simon3"),
+                new Author("Simon4"),
+                new Author("Simon5"),
+                new Author("Simon6"),
             };
 
         public static List<User> Users

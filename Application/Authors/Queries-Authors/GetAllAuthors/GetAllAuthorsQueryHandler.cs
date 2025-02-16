@@ -23,22 +23,13 @@ namespace Application.Authors.Queries_Authors.GetAllAuthors
 
         public async Task<OperationResult<List<Author>>> Handle(GetAllAuthorsQuery request, CancellationToken cancellationToken)
         {
-            try
+            var authors = await _authorRepository.GetAllAuthorsAsync();
+            if(!authors.Any())
             {
-                var authors = await _authorRepository.GetAllAuthorsAsync();
-                if (authors == null || !authors.Any())
-                {
-                    _logger.LogError("Authors not found");
-                    return OperationResult<List<Author>>.Failure("No authors found");
-                }
-                _logger.LogInformation("Authors found");
-                return OperationResult<List<Author>>.Successfull(authors);
+                return OperationResult<List<Author>>.Failure("No authors found"); 
             }
-            catch(Exception ex)
-            {
-                _logger.LogError(ex, "Authors not found");
-                return OperationResult<List<Author>>.Failure("Authors not found");
-            }
+
+            return OperationResult<List<Author>>.Successfull(authors.ToList(), "Authors retrived successfully");
         }
     }
 }

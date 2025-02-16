@@ -15,6 +15,7 @@ namespace Infrastructure.Repositories
     {
         private readonly RealDatabase _realDatabase;
         private readonly ILogger<BookRepository> _logger;
+
         public BookRepository(RealDatabase realDatabase, ILogger<BookRepository> logger)
         {
             _realDatabase = realDatabase;

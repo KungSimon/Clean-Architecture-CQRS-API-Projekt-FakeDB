@@ -38,7 +38,7 @@ namespace Application.Books.Queries_Books.GetBook
                 return OperationResult<Book>.Failure("Book was not found");
             }
             _logger.LogInformation("Book with Id: {BookId} found.", request.Id);
-            return OperationResult<Book>.Successfull(book);
+            return OperationResult<Book>.Successfull(book, "Book retrived successfully");
 
         }
     }
